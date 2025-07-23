@@ -1,6 +1,6 @@
 {
-  "name": "Hello World Destination",
-  "description": "Send events to Hello World destination",
+  "name": "Hello World App",
+  "description": "Simple Hello World app for PostHog",
   "url": "https://github.com/saed-ha/Posthog-Webhook.git",
   "main": "index.js",
   "frontend": "frontend/index.js",
@@ -10,7 +10,7 @@
       "name": "Webhook URL",
       "type": "string",
       "hint": "The URL to send events to",
-      "required": true
+      "required": false
     },
     {
       "key": "message_template",

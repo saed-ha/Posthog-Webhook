@@ -1,271 +1,117 @@
-// Hello World Destination Plugin Configuration UI
-// This component provides an interface for configuring the destination
+// Hello World App for PostHog
+// Simple Hello World page
 
 // Add CSS styles
 const style = document.createElement('style')
 style.textContent = `
-.hello-world-destination-config {
+.hello-world-app {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    max-width: 600px;
-    margin: 0 auto;
     padding: 2rem;
-}
-
-.hello-world-destination-config h2 {
-    color: #1f2937;
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
-    font-weight: 600;
-}
-
-.hello-world-destination-config .form-group {
-    margin-bottom: 1.5rem;
-}
-
-.hello-world-destination-config label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: #374151;
-}
-
-.hello-world-destination-config input,
-.hello-world-destination-config textarea {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
-    font-size: 0.875rem;
-    transition: border-color 0.15s ease-in-out;
-}
-
-.hello-world-destination-config input:focus,
-.hello-world-destination-config textarea:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.hello-world-destination-config .hint {
-    font-size: 0.75rem;
-    color: #6b7280;
-    margin-top: 0.25rem;
-}
-
-.hello-world-destination-config .preview {
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.375rem;
-    padding: 1rem;
-    margin-top: 1rem;
-}
-
-.hello-world-destination-config .preview h4 {
-    margin-bottom: 0.5rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #374151;
-}
-
-.hello-world-destination-config .preview-content {
-    font-family: monospace;
-    font-size: 0.75rem;
-    color: #1f2937;
-    white-space: pre-wrap;
-}
-
-.hello-world-destination-config .status {
-    padding: 0.75rem;
-    border-radius: 0.375rem;
-    margin-top: 1rem;
-    font-size: 0.875rem;
-}
-
-.hello-world-destination-config .status.success {
-    background: #d1fae5;
-    color: #065f46;
-    border: 1px solid #a7f3d0;
-}
-
-.hello-world-destination-config .status.error {
-    background: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #fecaca;
-}
-
-.hello-world-destination-config .test-button {
-    background: #3b82f6;
+    text-align: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.375rem;
-    cursor: pointer;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: background-color 0.15s ease-in-out;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.hello-world-destination-config .test-button:hover {
-    background: #2563eb;
+.hello-world-app h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
-.hello-world-destination-config .test-button:disabled {
-    background: #9ca3af;
-    cursor: not-allowed;
+.hello-world-app p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+}
+
+.hello-world-app .emoji {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: bounce 2s infinite;
+}
+
+.hello-world-app .config-info {
+    background: rgba(255,255,255,0.1);
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-top: 2rem;
+    backdrop-filter: blur(10px);
+    max-width: 400px;
+}
+
+.hello-world-app .config-info h3 {
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.hello-world-app .config-info p {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    text-align: left;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
 }
 `
 document.head.appendChild(style)
 
-// Main configuration component
-function renderConfig(config, setConfig) {
+// Render Hello World page
+function renderHelloWorld(config) {
     const container = document.createElement('div')
-    container.className = 'hello-world-destination-config'
+    container.className = 'hello-world-app'
     
-    // Get current values
-    const webhookUrl = config.webhook_url || ''
+    // Get config values
+    const webhookUrl = config.webhook_url || 'Not configured'
     const messageTemplate = config.message_template || 'Hello World! Event: {event}'
     
-    // Update config function
-    function updateConfig(key, value) {
-        const newConfig = { ...config, [key]: value }
-        setConfig(newConfig)
-        renderPreview(newConfig)
-    }
-    
-    // Test webhook function
-    async function testWebhook() {
-        const testButton = document.getElementById('test-button')
-        const statusDiv = document.getElementById('status')
-        
-        testButton.disabled = true
-        testButton.textContent = 'Testing...'
-        statusDiv.innerHTML = ''
-        
-        try {
-            const testPayload = {
-                message: messageTemplate.replace('{event}', 'test_event'),
-                event: 'test_event',
-                distinct_id: 'test_user',
-                timestamp: new Date().toISOString(),
-                properties: { test: true },
-                source: 'posthog-hello-world-destination'
-            }
-            
-            const response = await fetch(webhookUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(testPayload)
-            })
-            
-            if (response.ok) {
-                statusDiv.innerHTML = `
-                    <div class="status success">
-                        ✅ Test successful! Webhook sent successfully (Status: ${response.status})
-                    </div>
-                `
-            } else {
-                statusDiv.innerHTML = `
-                    <div class="status error">
-                        ❌ Test failed! Server responded with status: ${response.status}
-                    </div>
-                `
-            }
-        } catch (error) {
-            statusDiv.innerHTML = `
-                <div class="status error">
-                    ❌ Test failed! Error: ${error.message}
-                </div>
-            `
-        } finally {
-            testButton.disabled = false
-            testButton.textContent = 'Test Webhook'
-        }
-    }
-    
-    // Render preview function
-    function renderPreview(config) {
-        const previewDiv = document.getElementById('preview-content')
-        if (previewDiv) {
-            const previewPayload = {
-                message: config.message_template?.replace('{event}', 'example_event') || 'Hello World! Event: example_event',
-                event: 'example_event',
-                distinct_id: 'example_user',
-                timestamp: new Date().toISOString(),
-                properties: { example: true },
-                source: 'posthog-hello-world-destination'
-            }
-            previewDiv.textContent = JSON.stringify(previewPayload, null, 2)
-        }
-    }
-    
     container.innerHTML = `
-        <h2>🚀 Hello World Destination Configuration</h2>
+        <div class="emoji">🚀</div>
+        <h1>Hello World!</h1>
+        <p>Welcome to your PostHog app</p>
         
-        <div class="form-group">
-            <label for="webhook-url">Webhook URL *</label>
-            <input 
-                type="url" 
-                id="webhook-url"
-                value="${webhookUrl}"
-                placeholder="https://your-api.com/webhook"
-                onchange="updateConfig('webhook_url', this.value)"
-            >
-            <div class="hint">The URL where events will be sent</div>
-        </div>
-        
-        <div class="form-group">
-            <label for="message-template">Message Template</label>
-            <textarea 
-                id="message-template"
-                rows="3"
-                placeholder="Hello World! Event: {event}"
-                onchange="updateConfig('message_template', this.value)"
-            >${messageTemplate}</textarea>
-            <div class="hint">Use {event} to include the event name in your message</div>
-        </div>
-        
-        <button 
-            id="test-button"
-            class="test-button"
-            onclick="testWebhook()"
-            ${!webhookUrl ? 'disabled' : ''}
-        >
-            Test Webhook
-        </button>
-        
-        <div id="status"></div>
-        
-        <div class="preview">
-            <h4>Payload Preview</h4>
-            <div id="preview-content" class="preview-content">
-                ${JSON.stringify({
-                    message: messageTemplate.replace('{event}', 'example_event'),
-                    event: 'example_event',
-                    distinct_id: 'example_user',
-                    timestamp: new Date().toISOString(),
-                    properties: { example: true },
-                    source: 'posthog-hello-world-destination'
-                }, null, 2)}
-            </div>
+        <div class="config-info">
+            <h3>Configuration</h3>
+            <p><strong>Webhook URL:</strong> ${webhookUrl}</p>
+            <p><strong>Message Template:</strong> ${messageTemplate}</p>
         </div>
     `
-    
-    // Make functions globally available
-    window.updateConfig = updateConfig
-    window.testWebhook = testWebhook
     
     return container
 }
 
 // Export for PostHog
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { renderConfig }
+    module.exports = { renderHelloWorld }
 }
 
 // Auto-initialize if running in browser
 if (typeof window !== 'undefined') {
-    // This will be called by PostHog when the configuration page loads
-    window.renderHelloWorldDestinationConfig = renderConfig
+    // This will be called by PostHog when the app page loads
+    window.renderHelloWorldApp = renderHelloWorld
+    
+    // Also initialize immediately if possible
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = renderHelloWorld({})
+            document.body.appendChild(container)
+        })
+    } else {
+        const container = renderHelloWorld({})
+        document.body.appendChild(container)
+    }
 } 
