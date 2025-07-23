@@ -1,0 +1,12 @@
+packages:
+  - name: webhook-receiver
+    functions:
+      webhook:
+        runtime: nodejs:default
+        source: digitalocean-webhook-receiver.js
+        main: main
+        environment:
+          NODE_ENV: production
+        annotations:
+          web-export: true
+          raw-http: false 
