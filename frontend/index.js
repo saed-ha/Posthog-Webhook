@@ -1,4 +1,4 @@
-// Hello World Sidebar Plugin
+// Hello World Sidebar Plugin for PostHog Site Apps
 // This component shows a simple Hello World page in the PostHog sidebar
 
 // Load CSS styles
@@ -135,95 +135,21 @@ style.textContent = `
 `
 document.head.appendChild(style)
 
-export function HelloWorldSidebar({ config, setConfig }) {
-    const [clickCount, setClickCount] = useState(0)
-    const [currentTime, setCurrentTime] = useState(new Date())
-
-    // Update time every second
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setCurrentTime(new Date())
-        }, 1000)
-
-        return () => clearInterval(timer)
-    }, [])
-
-    const handleClick = () => {
-        setClickCount(prev => prev + 1)
+// Main render function for PostHog Site Apps
+function renderHelloWorldSidebar() {
+    // Find or create the container
+    let container = document.getElementById('hello-world-sidebar')
+    if (!container) {
+        container = document.createElement('div')
+        container.id = 'hello-world-sidebar'
+        document.body.appendChild(container)
     }
 
-    const resetCount = () => {
-        setClickCount(0)
-    }
-
-    return (
-        <div className="hello-world-sidebar">
-            <div className="emoji">🚀</div>
-            <h1>Hello World!</h1>
-            <p>Welcome to your custom PostHog sidebar plugin</p>
-            
-            <div className="stats">
-                <div className="stat">
-                    <span className="stat-number">{clickCount}</span>
-                    <span className="stat-label">Clicks</span>
-                </div>
-                <div className="stat">
-                    <span className="stat-number">{currentTime.getHours().toString().padStart(2, '0')}:{currentTime.getMinutes().toString().padStart(2, '0')}</span>
-                    <span className="stat-label">Current Time</span>
-                </div>
-            </div>
-
-            <div style={{ marginTop: '2rem' }}>
-                <button className="button" onClick={handleClick}>
-                    Click Me! 🎯
-                </button>
-                <button className="button" onClick={resetCount}>
-                    Reset Count 🔄
-                </button>
-            </div>
-
-            <div className="features">
-                <h3>Plugin Features</h3>
-                <ul>
-                    <li>Custom sidebar page</li>
-                    <li>Interactive buttons</li>
-                    <li>Real-time clock</li>
-                    <li>Click counter</li>
-                    <li>Beautiful design</li>
-                    <li>Responsive layout</li>
-                </ul>
-            </div>
-
-            <div className="timestamp">
-                Last updated: {currentTime.toLocaleString()}
-            </div>
-        </div>
-    )
-}
-
-// Simple state management for React-like functionality
-function useState(initialValue) {
-    let state = initialValue
-    const setState = (newValue) => {
-        state = typeof newValue === 'function' ? newValue(state) : newValue
-        // Re-render the component
-        renderComponent()
-    }
-    return [state, setState]
-}
-
-function useEffect(callback, dependencies) {
-    // Simple effect implementation
-    callback()
-}
-
-// Main render function
-function renderComponent() {
-    const container = document.getElementById('hello-world-sidebar')
-    if (!container) return
-
-    // Get current state
+    // Get current time
     const currentTime = new Date()
+    
+    // Get click count from localStorage or default to 0
+    const clickCount = parseInt(localStorage.getItem('hello-world-click-count') || '0')
     
     container.innerHTML = `
         <div class="hello-world-sidebar">
@@ -233,11 +159,11 @@ function renderComponent() {
             
             <div class="stats">
                 <div class="stat">
-                    <span class="stat-number" id="click-count">0</span>
+                    <span class="stat-number" id="click-count">${clickCount}</span>
                     <span class="stat-label">Clicks</span>
                 </div>
                 <div class="stat">
-                    <span class="stat-number">${currentTime.getHours().toString().padStart(2, '0')}:${currentTime.getMinutes().toString().padStart(2, '0')}</span>
+                    <span class="stat-number" id="current-time">${currentTime.getHours().toString().padStart(2, '0')}:${currentTime.getMinutes().toString().padStart(2, '0')}</span>
                     <span class="stat-label">Current Time</span>
                 </div>
             </div>
@@ -273,17 +199,20 @@ function renderComponent() {
     window.handleClick = function() {
         const clickCountElement = document.getElementById('click-count')
         const currentCount = parseInt(clickCountElement.textContent) || 0
-        clickCountElement.textContent = currentCount + 1
+        const newCount = currentCount + 1
+        clickCountElement.textContent = newCount
+        localStorage.setItem('hello-world-click-count', newCount.toString())
     }
 
     window.resetCount = function() {
         const clickCountElement = document.getElementById('click-count')
         clickCountElement.textContent = '0'
+        localStorage.setItem('hello-world-click-count', '0')
     }
 
     // Update time every second
     setInterval(() => {
-        const timeElement = document.querySelector('.stat-number:last-child')
+        const timeElement = document.getElementById('current-time')
         if (timeElement) {
             const now = new Date()
             timeElement.textContent = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`
@@ -291,5 +220,17 @@ function renderComponent() {
     }, 1000)
 }
 
-// Initialize the component
-renderComponent() 
+// Export for PostHog Site Apps
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { renderHelloWorldSidebar }
+}
+
+// Auto-initialize if running in browser
+if (typeof window !== 'undefined') {
+    // Wait for DOM to be ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', renderHelloWorldSidebar)
+    } else {
+        renderHelloWorldSidebar()
+    }
+} 
