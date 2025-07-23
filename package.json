@@ -1,16 +1,21 @@
 {
-  "name": "posthog-hello-world",
+  "name": "posthog-hello-world-site-app",
   "version": "1.0.0",
-  "description": "Simple Hello World plugin for PostHog sidebar",
+  "description": "Simple Hello World Site App for PostHog",
   "main": "index.js",
   "scripts": {
     "test": "echo 'No tests specified'"
   },
   "keywords": [
     "posthog",
-    "plugin",
+    "site-app",
     "hello-world"
   ],
   "author": "Your Name",
-  "license": "MIT"
+  "license": "MIT",
+  "posthog": {
+    "name": "Hello World",
+    "description": "Simple Hello World page",
+    "icon": "🚀"
+  }
 } 
