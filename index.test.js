@@ -1,294 +1,82 @@
-const { processEvent } = require('./index')
+// Tests for Hello World Sidebar Plugin
+const { processEvent } = require('./index.js')
 
-// Mock fetch
-global.fetch = jest.fn()
+// Mock console.log to capture logs
+const originalConsoleLog = console.log
+let logOutput = []
 
-describe('Webhook Filter Plugin', () => {
-    beforeEach(() => {
-        jest.clearAllMocks()
-        global.fetch.mockResolvedValue({
-            status: 200,
-            text: () => Promise.resolve('{"success": true}')
-        })
+beforeEach(() => {
+    logOutput = []
+    console.log = jest.fn((...args) => {
+        logOutput.push(args.join(' '))
+        originalConsoleLog(...args)
     })
+})
 
-    describe('Condition Evaluation', () => {
-        const mockEvent = {
+afterEach(() => {
+    console.log = originalConsoleLog
+})
+
+describe('Hello World Sidebar Plugin', () => {
+    test('should log when processing events', () => {
+        const event = {
             event: 'pageview',
             distinct_id: 'user123',
-            timestamp: '2024-01-01T12:00:00Z',
-            properties: {
-                '$current_url': 'https://example.com/page',
-                '$referrer': 'https://google.com',
-                'value': 150,
-                'category': 'electronics'
-            }
+            properties: { url: '/home' }
         }
-
-        test('should send event when no conditions are set', () => {
-            const meta = {
-                config: {
-                    webhook_url: 'https://test.com/webhook',
-                    conditions: '[]'
-                }
-            }
-
-            processEvent(mockEvent, meta)
-
-            expect(global.fetch).toHaveBeenCalledWith(
-                'https://test.com/webhook',
-                expect.objectContaining({
-                    method: 'POST',
-                    headers: expect.objectContaining({
-                        'Content-Type': 'application/json'
-                    }),
-                    body: expect.stringContaining('"event":"pageview"')
-                })
-            )
-        })
-
-        test('should send event when conditions match', () => {
-            const meta = {
-                config: {
-                    webhook_url: 'https://test.com/webhook',
-                    conditions: '[{"property": "event_name", "operator": "equals", "value": "pageview"}]'
-                }
-            }
-
-            processEvent(mockEvent, meta)
-
-            expect(global.fetch).toHaveBeenCalled()
-        })
-
-        test('should not send event when conditions do not match', () => {
-            const meta = {
-                config: {
-                    webhook_url: 'https://test.com/webhook',
-                    conditions: '[{"property": "event_name", "operator": "equals", "value": "purchase"}]'
-                }
-            }
-
-            processEvent(mockEvent, meta)
-
-            expect(global.fetch).not.toHaveBeenCalled()
-        })
-
-        test('should handle multiple conditions (ALL must be true)', () => {
-            const meta = {
-                config: {
-                    webhook_url: 'https://test.com/webhook',
-                    conditions: '[{"property": "event_name", "operator": "equals", "value": "pageview"}, {"property": "$current_url", "operator": "contains", "value": "example.com"}]'
-                }
-            }
-
-            processEvent(mockEvent, meta)
-
-            expect(global.fetch).toHaveBeenCalled()
-        })
-
-        test('should not send when one condition fails', () => {
-            const meta = {
-                config: {
-                    webhook_url: 'https://test.com/webhook',
-                    conditions: '[{"property": "event_name", "operator": "equals", "value": "pageview"}, {"property": "$current_url", "operator": "contains", "value": "nonexistent.com"}]'
-                }
-            }
-
-            processEvent(mockEvent, meta)
-
-            expect(global.fetch).not.toHaveBeenCalled()
-        })
+        
+        const meta = {
+            config: {}
+        }
+        
+        processEvent(event, meta)
+        
+        // Check that the plugin logs its activity
+        expect(logOutput.some(log => log.includes('Plugin loaded and processing events'))).toBe(true)
+        expect(logOutput.some(log => log.includes('SidebarPlugin'))).toBe(true)
+        expect(logOutput.some(log => log.includes('INFO'))).toBe(true)
     })
 
-    describe('Operators', () => {
-        const mockEvent = {
+    test('should handle events without properties', () => {
+        const event = {
+            event: 'test_event',
+            distinct_id: 'user456'
+        }
+        
+        const meta = {
+            config: {}
+        }
+        
+        expect(() => {
+            processEvent(event, meta)
+        }).not.toThrow()
+        
+        expect(logOutput.some(log => log.includes('Plugin loaded and processing events'))).toBe(true)
+    })
+
+    test('should handle empty config', () => {
+        const event = {
+            event: 'pageview',
+            distinct_id: 'user789'
+        }
+        
+        const meta = {}
+        
+        expect(() => {
+            processEvent(event, meta)
+        }).not.toThrow()
+    })
+
+    test('should log with correct plugin name', () => {
+        const event = {
             event: 'test',
-            distinct_id: 'user123',
-            properties: {
-                'string_prop': 'hello world',
-                'number_prop': 100,
-                'url_prop': 'https://example.com/page'
-            }
+            distinct_id: 'user'
         }
-
-        test('equals operator', () => {
-            const meta = {
-                config: {
-                    webhook_url: 'https://test.com/webhook',
-                    conditions: '[{"property": "string_prop", "operator": "equals", "value": "hello world"}]'
-                }
-            }
-
-            processEvent(mockEvent, meta)
-            expect(global.fetch).toHaveBeenCalled()
-        })
-
-        test('contains operator', () => {
-            const meta = {
-                config: {
-                    webhook_url: 'https://test.com/webhook',
-                    conditions: '[{"property": "string_prop", "operator": "contains", "value": "hello"}]'
-                }
-            }
-
-            processEvent(mockEvent, meta)
-            expect(global.fetch).toHaveBeenCalled()
-        })
-
-        test('starts_with operator', () => {
-            const meta = {
-                config: {
-                    webhook_url: 'https://test.com/webhook',
-                    conditions: '[{"property": "string_prop", "operator": "starts_with", "value": "hello"}]'
-                }
-            }
-
-            processEvent(mockEvent, meta)
-            expect(global.fetch).toHaveBeenCalled()
-        })
-
-        test('greater_than operator', () => {
-            const meta = {
-                config: {
-                    webhook_url: 'https://test.com/webhook',
-                    conditions: '[{"property": "number_prop", "operator": "greater_than", "value": 50}]'
-                }
-            }
-
-            processEvent(mockEvent, meta)
-            expect(global.fetch).toHaveBeenCalled()
-        })
-
-        test('is_set operator', () => {
-            const meta = {
-                config: {
-                    webhook_url: 'https://test.com/webhook',
-                    conditions: '[{"property": "string_prop", "operator": "is_set", "value": null}]'
-                }
-            }
-
-            processEvent(mockEvent, meta)
-            expect(global.fetch).toHaveBeenCalled()
-        })
-    })
-
-    describe('Webhook Configuration', () => {
-        const mockEvent = {
-            event: 'pageview',
-            distinct_id: 'user123',
-            properties: {}
-        }
-
-        test('should not send when webhook URL is not configured', () => {
-            const meta = {
-                config: {}
-            }
-
-            processEvent(mockEvent, meta)
-
-            expect(global.fetch).not.toHaveBeenCalled()
-        })
-
-        test('should include custom headers', () => {
-            const meta = {
-                config: {
-                    webhook_url: 'https://test.com/webhook',
-                    conditions: '[]',
-                    custom_headers: '{"Authorization": "Bearer token", "X-Custom": "value"}'
-                }
-            }
-
-            processEvent(mockEvent, meta)
-
-            expect(global.fetch).toHaveBeenCalledWith(
-                'https://test.com/webhook',
-                expect.objectContaining({
-                    headers: expect.objectContaining({
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer token',
-                        'X-Custom': 'value'
-                    })
-                })
-            )
-        })
-
-        test('should handle webhook errors gracefully', () => {
-            global.fetch.mockRejectedValue(new Error('Network error'))
-
-            const meta = {
-                config: {
-                    webhook_url: 'https://test.com/webhook',
-                    conditions: '[]'
-                }
-            }
-
-            // Should not throw error
-            expect(() => {
-                processEvent(mockEvent, meta)
-            }).not.toThrow()
-        })
-    })
-
-    describe('Payload Format', () => {
-        const mockEvent = {
-            event: 'pageview',
-            distinct_id: 'user123',
-            timestamp: '2024-01-01T12:00:00Z',
-            properties: {
-                '$current_url': 'https://example.com'
-            }
-        }
-
-        test('should send basic payload by default', () => {
-            const meta = {
-                config: {
-                    webhook_url: 'https://test.com/webhook',
-                    conditions: '[]'
-                }
-            }
-
-            processEvent(mockEvent, meta)
-
-            expect(global.fetch).toHaveBeenCalledWith(
-                'https://test.com/webhook',
-                expect.objectContaining({
-                    body: expect.stringContaining('"event":"pageview"')
-                })
-            )
-        })
-
-        test('should include full event when include_event_data is true', () => {
-            const meta = {
-                config: {
-                    webhook_url: 'https://test.com/webhook',
-                    conditions: '[]',
-                    include_event_data: 'true'
-                }
-            }
-
-            processEvent(mockEvent, meta)
-
-            expect(global.fetch).toHaveBeenCalledWith(
-                'https://test.com/webhook',
-                expect.objectContaining({
-                    body: expect.stringContaining('"full_event"')
-                })
-            )
-        })
-
-        test('should not include full event when include_event_data is false', () => {
-            const meta = {
-                config: {
-                    webhook_url: 'https://test.com/webhook',
-                    conditions: '[]',
-                    include_event_data: 'false'
-                }
-            }
-
-            processEvent(mockEvent, meta)
-
-            const callArgs = global.fetch.mock.calls[0]
-            expect(callArgs[1].body).not.toContain('"full_event"')
-        })
+        
+        const meta = {}
+        
+        processEvent(event, meta)
+        
+        expect(logOutput.some(log => log.includes('SidebarPlugin'))).toBe(true)
     })
 }) 

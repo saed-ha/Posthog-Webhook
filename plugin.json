@@ -1,40 +1,8 @@
 {
-  "name": "Webhook Filter Plugin",
-  "description": "Filter events based on conditions and send to external webhook",
-  "url": "https://github.com/your-username/posthog-webhook-filter-plugin",
+  "name": "Hello World Sidebar Plugin",
+  "description": "A simple plugin that shows Hello World in the PostHog sidebar",
+  "url": "https://github.com/saed-ha/Posthog-Webhook.git",
   "main": "index.js",
   "frontend": "frontend/index.js",
-  "config": [
-    {
-      "key": "webhook_url",
-      "name": "Webhook URL",
-      "type": "string",
-      "hint": "The URL to send filtered events to",
-      "required": true
-    },
-    {
-      "key": "conditions",
-      "name": "Filter Conditions",
-      "type": "json",
-      "hint": "JSON array of conditions to filter events. Format: [{\"property\": \"event_name\", \"operator\": \"equals\", \"value\": \"pageview\"}]",
-      "default": "[]",
-      "required": false
-    },
-    {
-      "key": "include_event_data",
-      "name": "Include Event Data",
-      "type": "choice",
-      "choices": ["true", "false"],
-      "default": "true",
-      "hint": "Whether to include the full event data in the webhook payload"
-    },
-    {
-      "key": "custom_headers",
-      "name": "Custom Headers",
-      "type": "json",
-      "hint": "JSON object of custom headers to send with the webhook. Format: {\"Authorization\": \"Bearer token\"}",
-      "default": "{}",
-      "required": false
-    }
-  ]
+  "config": []
 } 

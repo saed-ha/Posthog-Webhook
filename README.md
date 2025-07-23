@@ -1,152 +1,92 @@
-# PostHog Webhook Filter Plugin
+# Hello World Sidebar Plugin for PostHog
 
-A PostHog plugin that allows you to filter events based on configurable conditions and send matching events to an external webhook.
+A simple PostHog plugin that displays a beautiful "Hello World" page in the PostHog sidebar with interactive features.
 
 ## Features
 
-- **Event Filtering**: Define conditions to filter events based on event name, properties, or other criteria
-- **External Webhook**: Send filtered events to any HTTP endpoint
-- **Flexible Conditions**: Support for multiple operators (equals, contains, greater than, etc.)
-- **Custom Headers**: Add custom headers to webhook requests (e.g., for authentication)
-- **Configurable Payload**: Choose whether to include full event data or just essential fields
+- 🚀 **Beautiful Sidebar Page**: Custom-designed interface with gradient background
+- ⏰ **Real-time Clock**: Live clock that updates every second
+- 🎯 **Interactive Buttons**: Click counter with reset functionality
+- ✨ **Modern Design**: Responsive layout with animations
+- 📱 **Mobile Friendly**: Works on all screen sizes
 
 ## Installation
 
-1. Open your PostHog instance
-2. Go to Settings → Plugins
-3. Click on "Advanced" tab
-4. Click "Install from GitHub, GitLab or npm"
-5. Enter this repository URL or install from npm
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/saed-ha/Posthog-Webhook.git
+   cd Posthog-Webhook
+   ```
 
-## Configuration
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-### Required Settings
+3. **Run tests**:
+   ```bash
+   npm test
+   ```
 
-- **Webhook URL**: The HTTP endpoint where filtered events will be sent
+4. **Install in PostHog**:
+   - Go to your PostHog instance
+   - Navigate to **Settings → Plugins**
+   - Click **Install from GitHub**
+   - Enter: `https://github.com/saed-ha/Posthog-Webhook.git`
+   - Click **Install**
 
-### Optional Settings
+## Usage
 
-- **Filter Conditions**: JSON array of conditions to filter events
-- **Include Event Data**: Whether to include the full event data in the webhook payload
-- **Custom Headers**: JSON object of custom headers to send with the webhook
+Once installed, the plugin will:
 
-## Condition Format
+1. **Show in Sidebar**: The Hello World page will appear in your PostHog sidebar
+2. **Interactive Features**: 
+   - Click the "Click Me!" button to increment the counter
+   - Click "Reset Count" to reset the counter to zero
+   - Watch the real-time clock update every second
+3. **Logging**: The plugin logs its activity to PostHog's plugin logs
 
-Conditions are defined as a JSON array with the following structure:
+## Plugin Structure
 
-```json
-[
-  {
-    "property": "event_name",
-    "operator": "equals",
-    "value": "pageview"
-  },
-  {
-    "property": "$current_url",
-    "operator": "contains",
-    "value": "example.com"
-  }
-]
 ```
-
-### Supported Properties
-
-- `event_name`: The name of the event
-- `distinct_id`: The user's distinct ID
-- `timestamp`: The event timestamp
-- Any custom property from `event.properties`
-
-### Supported Operators
-
-- `equals`: Exact match
-- `not_equals`: Not equal to
-- `contains`: Contains substring
-- `not_contains`: Does not contain substring
-- `starts_with`: Starts with string
-- `ends_with`: Ends with string
-- `greater_than`: Numeric comparison
-- `less_than`: Numeric comparison
-- `greater_than_or_equal`: Numeric comparison
-- `less_than_or_equal`: Numeric comparison
-- `is_set`: Property exists and is not null
-- `is_not_set`: Property does not exist or is null
-
-## Example Configurations
-
-### Send all pageview events to webhook
-
-```json
-{
-  "webhook_url": "https://your-api.com/webhook",
-  "conditions": "[{\"property\": \"event_name\", \"operator\": \"equals\", \"value\": \"pageview\"}]"
-}
-```
-
-### Send events from specific users
-
-```json
-{
-  "webhook_url": "https://your-api.com/webhook",
-  "conditions": "[{\"property\": \"distinct_id\", \"operator\": \"starts_with\", \"value\": \"user_\"}]"
-}
-```
-
-### Send events with custom property
-
-```json
-{
-  "webhook_url": "https://your-api.com/webhook",
-  "conditions": "[{\"property\": \"$current_url\", \"operator\": \"contains\", \"value\": \"checkout\"}]"
-}
-```
-
-### Multiple conditions (ALL must be true)
-
-```json
-{
-  "webhook_url": "https://your-api.com/webhook",
-  "conditions": "[{\"property\": \"event_name\", \"operator\": \"equals\", \"value\": \"purchase\"}, {\"property\": \"$value\", \"operator\": \"greater_than\", \"value\": 100}]"
-}
-```
-
-### With custom headers
-
-```json
-{
-  "webhook_url": "https://your-api.com/webhook",
-  "conditions": "[{\"property\": \"event_name\", \"operator\": \"equals\", \"value\": \"pageview\"}]",
-  "custom_headers": "{\"Authorization\": \"Bearer your-token\", \"X-Custom-Header\": \"value\"}"
-}
-```
-
-## Webhook Payload Format
-
-The webhook will receive a POST request with the following JSON structure:
-
-```json
-{
-  "event": "pageview",
-  "distinct_id": "user123",
-  "timestamp": "2024-01-01T12:00:00Z",
-  "properties": {
-    "$current_url": "https://example.com",
-    "$referrer": "https://google.com"
-  },
-  "full_event": {
-    // Complete event object (if include_event_data is true)
-  }
-}
+├── index.js              # Main plugin logic
+├── frontend/index.js     # Sidebar UI component
+├── plugin.json          # Plugin configuration
+├── package.json         # Dependencies
+├── index.test.js        # Unit tests
+└── README.md           # This file
 ```
 
 ## Development
 
-To run tests:
-
+### Running Tests
 ```bash
-npm install
 npm test
 ```
 
+### Plugin Logs
+To view plugin logs in PostHog:
+1. Go to **Settings → Plugins**
+2. Find "Hello World Sidebar Plugin"
+3. Click on the plugin
+4. Check the **Logs** tab
+
+## Customization
+
+You can customize the plugin by modifying:
+
+- **Colors**: Update the CSS gradient in `frontend/index.js`
+- **Content**: Change the text and features in the sidebar
+- **Functionality**: Add new interactive elements
+- **Styling**: Modify the CSS classes and animations
+
 ## License
 
-MIT 
+MIT License - feel free to use and modify as needed.
+
+## Support
+
+If you encounter any issues:
+1. Check the plugin logs in PostHog
+2. Ensure the plugin is properly installed
+3. Try disabling and re-enabling the plugin 

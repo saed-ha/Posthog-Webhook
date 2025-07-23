@@ -1,16 +1,20 @@
 {
-  "name": "posthog-webhook-filter-plugin",
+  "name": "posthog-hello-world-sidebar",
   "version": "1.0.0",
-  "description": "PostHog plugin to filter events and send to external webhook based on conditions",
+  "description": "A simple PostHog plugin that shows Hello World in the sidebar",
   "main": "index.js",
   "scripts": {
     "test": "jest"
   },
-  "keywords": ["posthog", "plugin", "webhook", "filter"],
+  "keywords": [
+    "posthog",
+    "plugin",
+    "sidebar",
+    "hello-world"
+  ],
   "author": "Your Name",
   "license": "MIT",
   "devDependencies": {
     "jest": "^29.0.0"
-  },
-  "dependencies": {}
+  }
 } 
