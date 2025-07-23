@@ -1,16 +1,24 @@
 {
-  "name": "Hello World Sidebar",
-  "description": "Simple Hello World page in PostHog sidebar",
+  "name": "Hello World Destination",
+  "description": "Send events to Hello World destination",
   "url": "https://github.com/saed-ha/Posthog-Webhook.git",
   "main": "index.js",
   "frontend": "frontend/index.js",
-  "config": [],
-  "siteApps": [
+  "config": [
     {
-      "name": "Hello World",
-      "description": "Simple Hello World page",
-      "icon": "🚀",
-      "url": "https://github.com/saed-ha/Posthog-Webhook.git"
+      "key": "webhook_url",
+      "name": "Webhook URL",
+      "type": "string",
+      "hint": "The URL to send events to",
+      "required": true
+    },
+    {
+      "key": "message_template",
+      "name": "Message Template",
+      "type": "string",
+      "hint": "Template for the message (use {event} for event name)",
+      "default": "Hello World! Event: {event}",
+      "required": false
     }
   ]
 } 

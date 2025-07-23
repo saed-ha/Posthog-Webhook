@@ -1,21 +1,22 @@
 {
-  "name": "posthog-hello-world-site-app",
+  "name": "posthog-hello-world-destination",
   "version": "1.0.0",
-  "description": "Simple Hello World Site App for PostHog",
+  "description": "Hello World destination plugin for PostHog",
   "main": "index.js",
   "scripts": {
     "test": "echo 'No tests specified'"
   },
   "keywords": [
     "posthog",
-    "site-app",
+    "destination",
+    "webhook",
     "hello-world"
   ],
   "author": "Your Name",
   "license": "MIT",
   "posthog": {
-    "name": "Hello World",
-    "description": "Simple Hello World page",
+    "name": "Hello World Destination",
+    "description": "Send events to Hello World destination",
     "icon": "🚀"
   }
 } 
