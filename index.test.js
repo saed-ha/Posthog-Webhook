@@ -1,4 +1,4 @@
-// Tests for Hello World Sidebar Plugin
+// Tests for Hello World Sidebar App
 const { processEvent } = require('./index.js')
 
 // Mock console.log to capture logs
@@ -17,7 +17,7 @@ afterEach(() => {
     console.log = originalConsoleLog
 })
 
-describe('Hello World Sidebar Plugin', () => {
+describe('Hello World Sidebar App', () => {
     test('should log when processing events', () => {
         const event = {
             event: 'pageview',
@@ -31,9 +31,9 @@ describe('Hello World Sidebar Plugin', () => {
         
         processEvent(event, meta)
         
-        // Check that the plugin logs its activity
+        // Check that the app logs its activity
         expect(logOutput.some(log => log.includes('Plugin loaded and processing events'))).toBe(true)
-        expect(logOutput.some(log => log.includes('SidebarPlugin'))).toBe(true)
+        expect(logOutput.some(log => log.includes('HelloWorldApp'))).toBe(true)
         expect(logOutput.some(log => log.includes('INFO'))).toBe(true)
     })
 
@@ -67,7 +67,7 @@ describe('Hello World Sidebar Plugin', () => {
         }).not.toThrow()
     })
 
-    test('should log with correct plugin name', () => {
+    test('should log with correct app name', () => {
         const event = {
             event: 'test',
             distinct_id: 'user'
@@ -77,6 +77,6 @@ describe('Hello World Sidebar Plugin', () => {
         
         processEvent(event, meta)
         
-        expect(logOutput.some(log => log.includes('SidebarPlugin'))).toBe(true)
+        expect(logOutput.some(log => log.includes('HelloWorldApp'))).toBe(true)
     })
 }) 

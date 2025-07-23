@@ -1,5 +1,5 @@
-// PostHog Plugin - Sidebar Page
-// This plugin opens a custom page in the PostHog sidebar
+// PostHog App - Hello World Sidebar
+// This plugin creates a custom app in PostHog
 
 // Enhanced logging system
 function logToPostHog(message, level = 'info', meta = {}) {
@@ -8,15 +8,15 @@ function logToPostHog(message, level = 'info', meta = {}) {
         timestamp,
         level,
         message,
-        plugin: 'sidebar-hello-world',
+        plugin: 'hello-world-sidebar',
         ...meta
     }
     
     // Log to console (visible in PostHog logs)
-    console.log(`[SidebarPlugin] ${timestamp} [${level.toUpperCase()}] ${message}`)
+    console.log(`[HelloWorldApp] ${timestamp} [${level.toUpperCase()}] ${message}`)
 }
 
-// Main plugin function - just log that the plugin is loaded
+// Main plugin function
 function processEvent(event, meta) {
     // Log that plugin is working
     logToPostHog(`Plugin loaded and processing events`, 'info', { 

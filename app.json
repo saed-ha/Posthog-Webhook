@@ -4,5 +4,11 @@
   "url": "https://github.com/saed-ha/Posthog-Webhook.git",
   "main": "index.js",
   "frontend": "frontend/index.js",
-  "config": []
+  "config": [],
+  "app": {
+    "name": "Hello World Sidebar",
+    "description": "Interactive Hello World page in the sidebar",
+    "icon": "🚀",
+    "url": "https://github.com/saed-ha/Posthog-Webhook.git"
+  }
 } 
