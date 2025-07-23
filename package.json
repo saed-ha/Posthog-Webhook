@@ -1,25 +1,16 @@
 {
-  "name": "posthog-hello-world-app",
+  "name": "posthog-hello-world",
   "version": "1.0.0",
-  "description": "A simple PostHog app that shows Hello World in the sidebar",
+  "description": "Simple Hello World plugin for PostHog sidebar",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "echo 'No tests specified'"
   },
   "keywords": [
     "posthog",
-    "app",
-    "sidebar",
+    "plugin",
     "hello-world"
   ],
   "author": "Your Name",
-  "license": "MIT",
-  "devDependencies": {
-    "jest": "^29.0.0"
-  },
-  "posthog": {
-    "name": "Hello World Sidebar",
-    "description": "Interactive Hello World page in the sidebar",
-    "icon": "🚀"
-  }
+  "license": "MIT"
 } 

@@ -1,6 +1,6 @@
 {
   "name": "Hello World Sidebar",
-  "description": "Interactive Hello World page in the PostHog sidebar",
+  "description": "Simple Hello World page in PostHog sidebar",
   "url": "https://github.com/saed-ha/Posthog-Webhook.git",
   "main": "index.js",
   "frontend": "frontend/index.js",
