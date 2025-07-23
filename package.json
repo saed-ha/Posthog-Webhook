@@ -1,0 +1,18 @@
+{
+  "name": "posthog-webhook-filter-plugin",
+  "version": "1.0.0",
+  "description": "PostHog plugin to filter events and send to external webhook based on conditions",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": ["posthog", "plugin", "webhook", "filter"],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+} 
