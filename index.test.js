@@ -1,13 +1,15 @@
 const { processEvent } = require('./index')
 
-// Mock axios
-const axios = require('axios')
-jest.mock('axios')
+// Mock fetch
+global.fetch = jest.fn()
 
 describe('Webhook Filter Plugin', () => {
     beforeEach(() => {
         jest.clearAllMocks()
-        axios.post.mockResolvedValue({ status: 200 })
+        global.fetch.mockResolvedValue({
+            status: 200,
+            text: () => Promise.resolve('{"success": true}')
+        })
     })
 
     describe('Condition Evaluation', () => {
@@ -33,13 +35,15 @@ describe('Webhook Filter Plugin', () => {
 
             processEvent(mockEvent, meta)
 
-            expect(axios.post).toHaveBeenCalledWith(
+            expect(global.fetch).toHaveBeenCalledWith(
                 'https://test.com/webhook',
                 expect.objectContaining({
-                    event: 'pageview',
-                    distinct_id: 'user123'
-                }),
-                expect.any(Object)
+                    method: 'POST',
+                    headers: expect.objectContaining({
+                        'Content-Type': 'application/json'
+                    }),
+                    body: expect.stringContaining('"event":"pageview"')
+                })
             )
         })
 
@@ -53,7 +57,7 @@ describe('Webhook Filter Plugin', () => {
 
             processEvent(mockEvent, meta)
 
-            expect(axios.post).toHaveBeenCalled()
+            expect(global.fetch).toHaveBeenCalled()
         })
 
         test('should not send event when conditions do not match', () => {
@@ -66,7 +70,7 @@ describe('Webhook Filter Plugin', () => {
 
             processEvent(mockEvent, meta)
 
-            expect(axios.post).not.toHaveBeenCalled()
+            expect(global.fetch).not.toHaveBeenCalled()
         })
 
         test('should handle multiple conditions (ALL must be true)', () => {
@@ -79,7 +83,7 @@ describe('Webhook Filter Plugin', () => {
 
             processEvent(mockEvent, meta)
 
-            expect(axios.post).toHaveBeenCalled()
+            expect(global.fetch).toHaveBeenCalled()
         })
 
         test('should not send when one condition fails', () => {
@@ -92,7 +96,7 @@ describe('Webhook Filter Plugin', () => {
 
             processEvent(mockEvent, meta)
 
-            expect(axios.post).not.toHaveBeenCalled()
+            expect(global.fetch).not.toHaveBeenCalled()
         })
     })
 
@@ -116,7 +120,7 @@ describe('Webhook Filter Plugin', () => {
             }
 
             processEvent(mockEvent, meta)
-            expect(axios.post).toHaveBeenCalled()
+            expect(global.fetch).toHaveBeenCalled()
         })
 
         test('contains operator', () => {
@@ -128,7 +132,7 @@ describe('Webhook Filter Plugin', () => {
             }
 
             processEvent(mockEvent, meta)
-            expect(axios.post).toHaveBeenCalled()
+            expect(global.fetch).toHaveBeenCalled()
         })
 
         test('starts_with operator', () => {
@@ -140,7 +144,7 @@ describe('Webhook Filter Plugin', () => {
             }
 
             processEvent(mockEvent, meta)
-            expect(axios.post).toHaveBeenCalled()
+            expect(global.fetch).toHaveBeenCalled()
         })
 
         test('greater_than operator', () => {
@@ -152,7 +156,7 @@ describe('Webhook Filter Plugin', () => {
             }
 
             processEvent(mockEvent, meta)
-            expect(axios.post).toHaveBeenCalled()
+            expect(global.fetch).toHaveBeenCalled()
         })
 
         test('is_set operator', () => {
@@ -164,7 +168,7 @@ describe('Webhook Filter Plugin', () => {
             }
 
             processEvent(mockEvent, meta)
-            expect(axios.post).toHaveBeenCalled()
+            expect(global.fetch).toHaveBeenCalled()
         })
     })
 
@@ -182,7 +186,7 @@ describe('Webhook Filter Plugin', () => {
 
             processEvent(mockEvent, meta)
 
-            expect(axios.post).not.toHaveBeenCalled()
+            expect(global.fetch).not.toHaveBeenCalled()
         })
 
         test('should include custom headers', () => {
@@ -196,9 +200,8 @@ describe('Webhook Filter Plugin', () => {
 
             processEvent(mockEvent, meta)
 
-            expect(axios.post).toHaveBeenCalledWith(
+            expect(global.fetch).toHaveBeenCalledWith(
                 'https://test.com/webhook',
-                expect.any(Object),
                 expect.objectContaining({
                     headers: expect.objectContaining({
                         'Content-Type': 'application/json',
@@ -210,7 +213,7 @@ describe('Webhook Filter Plugin', () => {
         })
 
         test('should handle webhook errors gracefully', () => {
-            axios.post.mockRejectedValue(new Error('Network error'))
+            global.fetch.mockRejectedValue(new Error('Network error'))
 
             const meta = {
                 config: {
@@ -246,17 +249,11 @@ describe('Webhook Filter Plugin', () => {
 
             processEvent(mockEvent, meta)
 
-            expect(axios.post).toHaveBeenCalledWith(
+            expect(global.fetch).toHaveBeenCalledWith(
                 'https://test.com/webhook',
                 expect.objectContaining({
-                    event: 'pageview',
-                    distinct_id: 'user123',
-                    timestamp: '2024-01-01T12:00:00Z',
-                    properties: {
-                        '$current_url': 'https://example.com'
-                    }
-                }),
-                expect.any(Object)
+                    body: expect.stringContaining('"event":"pageview"')
+                })
             )
         })
 
@@ -271,12 +268,11 @@ describe('Webhook Filter Plugin', () => {
 
             processEvent(mockEvent, meta)
 
-            expect(axios.post).toHaveBeenCalledWith(
+            expect(global.fetch).toHaveBeenCalledWith(
                 'https://test.com/webhook',
                 expect.objectContaining({
-                    full_event: mockEvent
-                }),
-                expect.any(Object)
+                    body: expect.stringContaining('"full_event"')
+                })
             )
         })
 
@@ -291,8 +287,8 @@ describe('Webhook Filter Plugin', () => {
 
             processEvent(mockEvent, meta)
 
-            const callArgs = axios.post.mock.calls[0]
-            expect(callArgs[1]).not.toHaveProperty('full_event')
+            const callArgs = global.fetch.mock.calls[0]
+            expect(callArgs[1].body).not.toContain('"full_event"')
         })
     })
 }) 

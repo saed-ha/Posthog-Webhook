@@ -1,5 +1,3 @@
-const axios = require('axios')
-
 // Enhanced logging system
 function logToPostHog(message, level = 'info', meta = {}) {
     const timestamp = new Date().toISOString()
@@ -85,7 +83,7 @@ function eventMatchesConditions(event, conditions) {
     return conditions.every(condition => evaluateCondition(event, condition))
 }
 
-// Helper function to send webhook
+// Helper function to send webhook using fetch instead of axios
 async function sendWebhook(webhookUrl, payload, customHeaders = {}) {
     try {
         const headers = {
@@ -95,12 +93,18 @@ async function sendWebhook(webhookUrl, payload, customHeaders = {}) {
         
         logToPostHog(`Sending webhook to ${webhookUrl}`, 'info', { webhookUrl, payloadSize: JSON.stringify(payload).length })
         
-        const response = await axios.post(webhookUrl, payload, { headers })
+        const response = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(payload)
+        })
+        
+        const responseData = await response.text()
         
         logToPostHog(`Webhook sent successfully to ${webhookUrl}. Status: ${response.status}`, 'info', { 
             webhookUrl, 
             status: response.status,
-            responseSize: JSON.stringify(response.data).length 
+            responseSize: responseData.length 
         })
         
         return { success: true, status: response.status }
